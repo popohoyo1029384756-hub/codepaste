@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style></style>
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePaste - Share Your Code</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0d1117;
+            min-height: 100vh;
+            padding: 20px;
+            color: #c9d1d9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: #58a6ff;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #21262d;
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #58a6ff 0%, #79c0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #8b949e;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            font-family: 'Courier New', monospace;
+            min-height: 300px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .paste-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .paste-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .paste-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .paste-item h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .paste-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .paste-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .paste-view {
+            background: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .paste-header {
+            background: #2d2d2d;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .paste-title {
+            color: white;
+            font-weight: 600;
+        }
+
+        .paste-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-small:hover {
+            background: #5568d3;
+        }
+
+        .paste-code {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .paste-code pre {
+            margin: 0;
+        }
+
+        .paste-code code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 CodePaste</h1>
+            <p>Share your code snippets with the world</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('create')">✨ Create New</button>
+            <button class="tab-btn" onclick="switchTab('browse')">📚 Browse Pastes</button>
+        </div>
+
+        <div id="create-tab" class="tab-content active">
+            <div id="success-msg" style="display: none;" class="success-message"></div>
+            <form id="paste-form">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="title" placeholder="My Awesome Code" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Language</label>
+                    <select id="language">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="php">PHP</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                        <option value="lua">Lua</option>
+                        <option value="plaintext">Plain Text</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Code</label>
+                    <textarea id="code" placeholder="Paste your code here..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn">🚀 Create Paste</button>
+            </form>
+        </div>
+
+        <div id="browse-tab" class="tab-content">
+            <div id="paste-list" class="paste-list"></div>
+        </div>
+
+        <div id="view-tab" class="tab-content">
+            <button class="btn back-btn" onclick="switchTab('browse')">← Back to List</button>
+            <div id="paste-view"></div>
+        </div>
+    </div>
+
+    <script>
+        let pastes = [];
+        let currentPasteId = null;
+
+        // Load pastes from memory
+        function loadPastes() {
+            return pastes;
+        }
+
+        // Save paste to memory
+        function savePaste(paste) {
+            pastes.unshift(paste);
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tab === 'create') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('create-tab').classList.add('active');
+            } else if (tab === 'browse') {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('browse-tab').classList.add('active');
+                renderPasteList();
+            } else if (tab === 'view') {
+                document.getElementById('view-tab').classList.add('active');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('paste-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const paste = {
+                id: Date.now(),
+                title: document.getElementById('title').value,
+                language: document.getElementById('language').value,
+                code: document.getElementById('code').value,
+                created: new Date().toLocaleString('th-TH'),
+                lines: document.getElementById('code').value.split('\n').length
+            };
+
+            savePaste(paste);
+
+            // Reset form
+            document.getElementById('paste-form').reset();
+
+            // ไปหน้าดูโค้ดทันที
+            viewPaste(paste.id);
+        });
+
+        // Render paste list
+        function renderPasteList() {
+            const list = document.getElementById('paste-list');
+            const allPastes = loadPastes();
+
+            if (allPastes.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        <h3>No pastes yet</h3>
+                        <p>Create your first paste to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = allPastes.map(paste => `
+                <div class="paste-item" onclick="viewPaste(${paste.id})">
+                    <h3>${paste.title}</h3>
+                    <div class="paste-meta">
+                        <span>🔤 ${paste.language}</span>
+                        <span>📏 ${paste.lines} lines</span>
+                        <span>🕐 ${paste.created}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // View single paste
+        function viewPaste(id) {
+            currentPasteId = id;
+            const paste = loadPastes().find(p => p.id === id);
+            if (!paste) return;
+
+            const view = document.getElementById('paste-view');
+            view.innerHTML = `
+                <div class="paste-view">
+                    <div class="paste-header">
+                        <div class="paste-title">${paste.title}</div>
+                        <div class="paste-actions">
+                            <button class="btn-small" onclick="downloadCode()">💾 Download</button>
+                            <button class="btn-small" onclick="copyCode()">📋 Copy</button>
+                            <button class="btn-small" onclick="viewRaw()">📄 Raw</button>
+                        </div>
+                    </div>
+                    <div class="paste-code">
+                        <pre><code class="language-${paste.language}" id="code-content">${escapeHtml(paste.code)}</code></pre>
+                    </div>
+                </div>
+            `;
+
+            hljs.highlightAll();
+            switchTab('view');
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            const paste = loadPastes().find(p => p.id === currentPasteId);
+            if (!paste) return;
+
+            navigator.clipboard.writeText(paste.code).then(() => {
+                alert('✅ Code copied to clipboard!');
+            });
+        }
+
+        // Download code as file
+        function downloadCode() {
+            const paste = loadPastes().find(p => p.id === currentPasteId);
+            if (!paste) return;
+
+            // กำหนดนามสกุลไฟล์ตามภาษา
+            const extensions = {
+                'javascript': 'js',
+                'python': 'py',
+                'java': 'java',
+                'cpp': 'cpp',
+                'html': 'html',
+                'css': 'css',
+                'php': 'php',
+                'ruby': 'rb',
+                'go': 'go',
+                'rust': 'rs',
+                'plaintext': 'txt'
+            };
+
+            const ext = extensions[paste.language] || 'txt';
+            const filename = `${paste.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${ext}`;
+
+            const blob = new Blob([paste.code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // View raw code
+        function viewRaw() {
+            const paste = loadPastes().find(p => p.id === currentPasteId);
+            if (!paste) return;
+
+            const blob = new Blob([paste.code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        renderPasteList();
+    </script>
+</body>
+</html>
+  <script></script>
+</body>
+</html>
